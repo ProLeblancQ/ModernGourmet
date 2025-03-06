@@ -22,22 +22,32 @@ router.post("/register", async (req, res) => {
 );
 
 router.post("/login", async (req, res) => {
-    const {email, password} = req.body;
-    const currentUser = await User.findOne({email});
+    const { email, password } = req.body;
+    const currentUser = await User.findOne({ email });
+    
     if (!currentUser) {
         return res.status(400).send("Email not found");
     }
+
     const passwordMatch = await bcrypt.compare(password, currentUser.password);
+    
     if (!passwordMatch) {
         return res.status(400).send("Invalid password");
     }
-    const token = jwt.sign({id: currentUser._id, username: currentUser.username}, process.env.SECRET);
-    res.cookie("token", token, { httpOnly: true , secure: true , maxAge: 3600000});
-    res.json({token});
 
+    // Création du token JWT
+    const token = jwt.sign({ id: currentUser._id, username: currentUser.username }, process.env.SECRET, { expiresIn: '1h' });
 
-}
-);
+    // Renvoi du cookie sécurisé avec le token
+    res.cookie("token", token, { httpOnly: true, secure: true, maxAge: 3600000 });
+
+    // Réponse avec le token et le username
+    res.json({
+        token,
+        username: currentUser.username // Ajout du username dans la réponse
+    });
+});
+
 
 module.exports = router;
 
