@@ -51,6 +51,7 @@ router.post("/register", async (req, res) => {
             message: "Utilisateur enregistré avec succès",
             token,
             username: newUser.username,
+            isAdmin: newUser.isAdmin, // Renvoi des informations pertinentes
         });
     } catch (error) {
         console.error("Erreur d'inscription:", error);

@@ -1,43 +1,25 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/authStore';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from '@/stores/authStore'
 
-const email = ref('');
-const password = ref('');
-const errorMsg = ref('');
-const isLoading = ref(false);
+const email = ref("");
+const password = ref("");
 const router = useRouter();
 const authStore = useAuthStore();
 
 const login = async () => {
-  try {
-    isLoading.value = true;
-    errorMsg.value = '';
-    
-    // Appel à la méthode de login du store
-    const success = await authStore.login(email.value, password.value);
-    
-    if (success) {
-      console.log('Connexion réussie. Redirection...');
-      
-      // Vérifie si l'utilisateur est un admin ou un utilisateur normal
-      if (authStore.isAdmin) {
-        router.push('/admin-dashboard'); // Redirection vers la page admin si admin
-      } else {
-        router.push('/'); // Redirection vers la page d'accueil si utilisateur normal
-      }
-    } else {
-      errorMsg.value = "Échec de la connexion. Vérifiez vos identifiants.";
-    }
-  } catch (error) {
-    console.error('Erreur lors de la connexion:', error);
-    errorMsg.value = "Une erreur s'est produite. Veuillez réessayer.";
-  } finally {
-    isLoading.value = false;
+  const response = await authStore.login(email.value, password.value);
+  
+  if (response) {
+    console.log("Connexion réussie. Redirection...");
+    router.push("/");
+  } else {
+    alert("Échec de la connexion. Vérifiez vos identifiants.");
   }
 };
 </script>
+
 
 <template>
   <div
@@ -89,11 +71,6 @@ const login = async () => {
           />
         </div>
 
-        <!-- Message d'erreur -->
-        <div v-if="errorMsg" class="text-red-500 text-sm font-medium">
-          {{ errorMsg }}
-        </div>
-
         <!-- Lien vers l'inscription -->
         <div class="flex items-center justify-between mb-6">
           <a
@@ -101,21 +78,14 @@ const login = async () => {
             class="text-xs text-indigo-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >Créer un compte</a
           >
-          <a
-            href="/forgot-password"
-            class="text-xs text-indigo-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >Mot de passe oublié?</a
-          >
         </div>
 
         <!-- Bouton de connexion -->
         <button
           type="submit"
-          :disabled="isLoading"
-          class="w-full py-3 px-4 bg-indigo-600 text-white font-medium text-lg rounded-md shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full py-3 px-4 bg-indigo-600 text-white font-medium text-lg rounded-md shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out transform hover:scale-105"
         >
-          <span v-if="isLoading">Connexion en cours...</span>
-          <span v-else>Se connecter</span>
+          Se connecter
         </button>
       </form>
     </div>
