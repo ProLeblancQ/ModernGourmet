@@ -2,8 +2,6 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { useToast } from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
 
 
 import App from './App.vue';

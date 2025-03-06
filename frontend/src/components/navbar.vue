@@ -20,10 +20,13 @@
           <RouterLink to="/register" class="hover:text-gray-300">Inscription</RouterLink>
         </li>
 
+        <!-- Afficher la réservation pour TOUS les utilisateurs connectés -->
         <li v-if="authStore.isLoggedIn">
           <RouterLink to="/add_appointment" class="hover:text-gray-300">Réserver</RouterLink>
         </li>
-        <li v-if="authStore.isLoggedIn">
+
+        <!-- Afficher "Mes Réservations" uniquement pour les admins -->
+        <li v-if="authStore.isLoggedIn && authStore.isAdmin">
           <RouterLink to="/list_appointment" class="hover:text-gray-300">Mes Réservations</RouterLink>
         </li>
       </ul>

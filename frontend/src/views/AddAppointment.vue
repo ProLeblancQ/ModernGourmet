@@ -1,14 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useToast } from 'vue-toastification';
-
-const toast = useToast();
 
 const name = ref('');
 const date = ref('');
 const time = ref('');
 const peopleCount = ref(1);
+const minDate = ref('');
+const successMessage = ref('');
 
 const availableTimes = ref([
   "12:00", "12:30", "13:00", "13:30", "14:00",
@@ -20,6 +19,10 @@ onMounted(() => {
     if (storedName) {
         name.value = storedName;
     }
+
+    // Définir la date minimale (aujourd'hui)
+    const today = new Date();
+    minDate.value = today.toISOString().split('T')[0];
 });
 
 const bookTable = async () => {
@@ -42,17 +45,17 @@ const bookTable = async () => {
             }
         });
 
-        // ✅ Afficher un toast de confirmation
-        toast.success(`Réservation confirmée ! 📅 ${date.value} - 🕒 ${time.value} - 👥 ${peopleCount.value} pers.`, {
-            position: "top-right",
-            timeout: 5000,
-        });
-
-        console.log(response.data);
+        console.log("Réservation confirmée :", response.data);
+        successMessage.value = "✅ Votre réservation a été confirmée avec succès ! 🎉";
     } catch (error) {
-        console.error(error);
-        toast.error("Erreur lors de la réservation. Veuillez réessayer.");
+        console.error("Erreur lors de la réservation :", error);
+        successMessage.value = "❌ Une erreur est survenue lors de la réservation. Veuillez réessayer.";
     }
+
+    // Faire disparaître le message après 5 secondes
+    setTimeout(() => {
+        successMessage.value = '';
+    }, 5000);
 };
 </script>
 
@@ -71,7 +74,7 @@ const bookTable = async () => {
 
         <div class="mb-6">
           <label for="date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date</label>
-          <input v-model="date" type="date" id="date" 
+          <input v-model="date" type="date" id="date" :min="minDate"
                  class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:focus:ring-indigo-600 transition duration-300 ease-in-out" required>
         </div>
 
@@ -96,12 +99,29 @@ const bookTable = async () => {
                 class="w-full py-3 px-4 bg-indigo-600 text-white font-medium text-lg rounded-md shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out transform hover:scale-105">
           Réserver
         </button>
+
+        <!-- Message de confirmation -->
+        <transition name="fade">
+          <p v-if="successMessage" class="text-center mt-4 p-2 rounded-md text-white" 
+             :class="successMessage.includes('succès') ? 'bg-green-500' : 'bg-red-500'">
+            {{ successMessage }}
+          </p>
+        </transition>
+
       </form>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Animation d'apparition et de disparition */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease-in-out;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
 /* Image de fond fixe */
 body {
   background-image: url('/restaurant-bg.jpg');
@@ -128,44 +148,6 @@ h1 {
 
 /* Effets sur le formulaire au focus */
 input:focus, select:focus, button:focus {
-  outline: none;
-  box-shadow: 0 0 10px rgba(99, 102, 241, 1);
-}
-
-/* Effet d'agrandissement au survol du bouton */
-button:hover {
-  transform: scale(1.05);
-}
-</style>
-
-
-<style scoped>
-/* Image de fond fixe */
-body {
-  background-image: url('/restaurant-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  height: 100vh;
-  margin: 0;
-}
-
-/* Animation d'apparition pour le titre */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-h1 {
-  animation: fadeIn 1s ease-out;
-}
-
-/* Effets sur le formulaire au focus */
-input:focus, button:focus {
   outline: none;
   box-shadow: 0 0 10px rgba(99, 102, 241, 1);
 }
