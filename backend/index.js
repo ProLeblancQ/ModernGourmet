@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const database = require('./config');
 const user = require('./routes/user');
-const appointment = require('./routes/appointment');
+const reservation = require('./routes/reservation');
 const cookieParser = require('cookie-parser');
 dotenv.config();
 require('./cronTache.js');
@@ -18,7 +18,7 @@ app.use(cors({origin: "http://localhost:5173", credentials: true}));
 // Routes
 app.use('/user', user);
 
-app.use('/appointment', appointment);
+app.use('/reservation', reservation);
 
 // Connect to MongoDB
 

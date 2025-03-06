@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const appointment = require('./model/Appointment');
+const reservation = require('./model/reservation');
 const mongoose = require('mongoose');
 const user = require('./model/User');
 const sendEmail = require('./mail');
@@ -10,7 +10,7 @@ require('dotenv').config();
 
     try {
 
-    const lists = await appointment.find({startDate:{
+    const lists = await reservation.find({startDate:{
         $gte: new Date(new Date().setHours(0, 0, 0)),
         $lt: new Date(new Date().setHours(23, 59, 59))
     } }).populate('user');
